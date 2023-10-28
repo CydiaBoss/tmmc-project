@@ -7,6 +7,7 @@ from IPython.display import display, Javascript
 from base64 import b64decode, b64encode
 import PIL
 import io
+from google.colab.output import eval_js
 
 def load_images_from_folder(folder):
     images = []
