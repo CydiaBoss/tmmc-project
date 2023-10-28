@@ -1,15 +1,25 @@
 # import dependencies
 import os
 import numpy as np
+from numpy.typing import NDArray
 import matplotlib.pyplot as plt
 import cv2
 from IPython.display import display, Javascript
 from base64 import b64decode, b64encode
 import PIL
 import io
-from google.colab.output import eval_js
 
-def load_images_from_folder(folder):
+def pointDetector(path_to_img):
+    img = cv2.imread(path_to_img)
+    kernel = np.float32([[-1,-1,-1],[-1,8,-1],[-1,-1,-1]])
+    img_out = cv2.filter2D(img,-1,kernel)
+    plt.figure(figsize=(20,10))
+    plt.subplot(121),plt.imshow(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)),plt.title('Input',color='c')
+    plt.subplot(122),plt.imshow(cv2.cvtColor(img_out,cv2.COLOR_BGR2RGB)),plt.title('Transformed',color='c')
+    plt.show()
+    return
+
+def load_images_from_folder(folder : str):
     images = []
     for filename in os.listdir(folder):
         img = cv2.imread(os.path.join(folder,filename))
@@ -17,7 +27,7 @@ def load_images_from_folder(folder):
             images.append(img)
     return images
 
-def rotate_img(angle_val):
+def rotate_img(angle_val : float):
     path_to_img = 'noidea.jpg'
     scaleFactor = 1
     img = cv2.imread(path_to_img,cv2.IMREAD_UNCHANGED)
@@ -39,7 +49,7 @@ hori_line_mat = np.float32([[-1,-1,-1],
 verti_line_mat = np.float32([[-1,2,-1],
                             [-1,2,-1],
                             [-1,2,-1]])
-def lineDetector(path_to_img,kernel):
+def lineDetector(path_to_img : str, kernel : NDArray[np.floating]):
     img = cv2.imread(path_to_img)
     img_out = cv2.filter2D(img,-1,kernel)
     plt.figure(figsize=(20,10))
@@ -48,7 +58,7 @@ def lineDetector(path_to_img,kernel):
     plt.show()
     return
 
-def edgeDetector(path_to_img,algo_edgedetect=None):
+def edgeDetector(path_to_img : str, algo_edgedetect : str=None):
     img = cv2.imread(path_to_img)
     if algo_edgedetect == 'canny':
         img_edge = cv2.Canny(img,100,200)
@@ -79,9 +89,9 @@ def edgeDetector(path_to_img,algo_edgedetect=None):
     plt.subplot(121),plt.imshow(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)),plt.title('Input',color='c')
     plt.subplot(122),plt.imshow(cv2.cvtColor(img_edge,cv2.COLOR_BGR2RGB)),plt.title('Output',color='c')
     plt.show()
-    return
+    return img_edge
 
-def houghLineDetector(path_to_img):
+def houghLineDetector(path_to_img : str):
     img = cv2.imread(path_to_img)
     img_edge = cv2.Canny(img,80,200)
     lines = cv2.HoughLinesP(img_edge,5,np.pi/180,20,minLineLength=50,maxLineGap=10)
@@ -94,23 +104,24 @@ def houghLineDetector(path_to_img):
     plt.show()
     return
 
-def houghCircleDetector(path_to_img):
+def houghCircleDetector(path_to_img : str):
     img = cv2.imread(path_to_img)
-    img = cv2.medianBlur(img,3)
-    img_edge = cv2.Canny(img,100,200)
+    img_edge = cv2.medianBlur(img,3)
+    #img_edge = cv2.Canny(img,100,200)
 
-    circles = cv2.HoughCircles(img_edge,cv2.HOUGH_GRADIENT,1,minDist=20,param1=200,param2=70)
+    circles = cv2.HoughCircles(img_edge,cv2.HOUGH_GRADIENT,1,minDist=50,param1=200,param2=31, maxRadius=100, minRadius=50)
+    print(circles)
     circles = np.uint16(np.around(circles))
     for val in circles[0,:]:
-        cv2.circle(img,(val[0],val[1]),val[2],(255,0,0),2)
+        cv2.circle(img_edge,(val[0],val[1]),val[2],(255,0,0),2)
 
     plt.figure(figsize=(20,10))
-    plt.subplot(121),plt.imshow(cv2.cvtColor(img_edge,cv2.COLOR_BGR2RGB)),plt.title('Input',color='c')
+    plt.subplot(121),plt.imshow(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)),plt.title('Input',color='c')
     plt.subplot(122),plt.imshow(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)),plt.title('Result',color='c')
     plt.show()
     return
 
-def detectColorObjects(path_to_img,find_color=None):
+def detectColorObjects(path_to_img : str, find_color : str=None):
     img =cv2.imread(path_to_img)
     img_hsv = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
     if find_color == 'red':
