@@ -404,7 +404,7 @@ while True:
 
     # Detect Partial
     # Create Circle Detector
-    params = cv2.SimpleBlobDetector_Params()
+    params =  cv2.SimpleBlobDetector_Params()
 
     # Filter by Circularity
     params.filterByCircularity = True
