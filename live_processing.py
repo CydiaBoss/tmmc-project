@@ -1,3 +1,16 @@
+import os
+import numpy as np
+from numpy.typing import NDArray
+import matplotlib.pyplot as plt
+import cv2
+from IPython.display import display, Javascript
+from base64 import b64decode, b64encode
+import PIL
+import io
+from js2py import eval_js
+
+
+testjpg='./Training Images/White/White_6.jpg'
 # function to convert the JavaScript object into an OpenCV image
 def js_to_image(js_reply):
   """
@@ -96,7 +109,7 @@ except Exception as err:
   print(str(err))
 
 from IPython.display import display, Javascript
-from google.colab.output import eval_js
+from js2py import eval_js
 from base64 import b64decode
 
 def re_encode_video(video_path):

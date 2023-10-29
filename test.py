@@ -1,27 +1,33 @@
-import cv2
 import numpy as np
+import cv2
 
-# Load image
 testjpg='./Training Images/White/White_14.jpg'
-img = cv2.imread(testjpg)
 
-# Convert the image to grayscale
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+image = cv2.imread(testjpg)
+original = image.copy()
+image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+lower = np.array([0, 0, 0], dtype="uint8")
+upper = np.array([180, 255, 40], dtype="uint8")
+mask = cv2.inRange(image, lower, upper)
+mask = 255 - mask
+output = cv2.bitwise_and(image, image, mask = mask)
 
-# Create a SimpleBlobDetector object
-detector = cv2.SimpleBlobDetector_create()
+# Find contours
+cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+# Extract contours depending on OpenCV version
+cnts = cnts[0] if len(cnts) == 2 else cnts[1]
 
-# Detect blobs in the image
-keypoints = detector.detect(gray)
+# Iterate through contours and filter by the number of vertices 
+for c in cnts:
+    perimeter = cv2.arcLength(c, True)
+    approx = cv2.approxPolyDP(c, 0.04 * perimeter, True)
+    if len(approx) > 5:
+        cv2.drawContours(original, [c], -1, (36, 255, 12), -1)
 
-# Draw circles on the original image
-for keypoint in keypoints:
-    x = int(keypoint.pt[0])
-    y = int(keypoint.pt[1])
-    r = int(keypoint.size / 2)
-    cv2.circle(img, (x, y), r, (0, 255, 0), 2)
-
-# Display the image
-cv2.imshow("Detected Circles", img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+cv2.imshow('mask', mask)
+cv2.imshow('original', original)
+cv2.imshow('output', output)
+cv2.imwrite('mask.png', mask)
+cv2.imwrite('original.png', original)
+cv2.imshow('output.png', output)
+cv2.waitKey()

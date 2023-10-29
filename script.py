@@ -18,14 +18,17 @@ def CircleDetector(path_to_img : str):
 
 #print(whiteImgs[1])
 
-testjpg='./Training Images/White/White_6.jpg'
+testjpg='./Training Images/White/White_9.jpg'
+#testjpg='./Training Images/White/6_some_holes_covered_1_partial_with_light.jpg'
 
 verti_line_mat = np.float32([[-1,2,-1],
                             [-1,2,-1],
                             [-1,2,-1]])
 
 MainImgBGR = cv2.imread(testjpg,cv2.IMREAD_UNCHANGED)
-img_hsv = cv2.cvtColor(MainImgBGR,cv2.COLOR_BGR2GRAY)
+img_hsv=cv2.GaussianBlur(MainImgBGR, (7, 7), 0) 
+img_hsv = cv2.cvtColor(img_hsv,cv2.COLOR_BGR2GRAY)
+img_hsv = cv2.convertScaleAbs(img_hsv,2,10)
 plt.imshow(img_hsv)
 plt.savefig('test.jpg')
 plt.show()
