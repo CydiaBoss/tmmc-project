@@ -18,8 +18,9 @@ def CircleDetector(path_to_img : str):
 
 #print(whiteImgs[1])
 
-testjpg='./Training Images/White/White_9.jpg'
+#testjpg='./Training Images/White/White_9.jpg'
 #testjpg='./Training Images/White/6_some_holes_covered_1_partial_with_light.jpg'
+testjpg='./Training Images/Randy-pics/White_9.jpg'
 
 verti_line_mat = np.float32([[-1,2,-1],
                             [-1,2,-1],
